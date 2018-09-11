@@ -2,7 +2,7 @@ version: '3'
 
 services:
     zeus1:
-        image: zeus-mix-server:latest
+        image: schal/verificatum-demo:latest
         ports:
             - "5000:5000"
             - "8041:8041"
@@ -18,7 +18,7 @@ services:
         volumes:
             - ./params.json:/params.json
     zeus2:
-        image: zeus-mix-server:latest
+        image: schal/verificatum-demo:latest
         ports:
             - "5050:5050"
             - "8042:8042"
@@ -32,7 +32,7 @@ services:
         depends_on:
             - zeus1
     zeus3:
-        image: zeus-mix-server:latest
+        image: schal/verificatum-demo:latest
         ports:
             - "6000:6000"
             - "8043:8043"

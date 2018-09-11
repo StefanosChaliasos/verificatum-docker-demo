@@ -8,6 +8,8 @@ shell:
     sudo docker exec -i -t zeus /bin/bash
 ps:
     sudo docker ps -a
+tag:
+    docker tag ebdcbecbeba7 schal/verificatum-demo:latest
 
 run to multiple vms:
     central:
