@@ -2,7 +2,7 @@
 
 ## Run localhost
 
-First run the following commands:
+First execute the following commands:
 
 ```bash
 docker-compose build
@@ -17,7 +17,7 @@ curl http://localhost:5000/api/start
 http GET http://localhost:5000/api/start
 ```
 
-## Run to a server or multiple servers
+## Run on server or on multiple servers
 
 Check COMMANDS file.
 
