@@ -2,6 +2,7 @@ import requests
 import sys
 import sh
 import json
+import time
 
 central_node = sys.argv[1]
 central_node_ip = sys.argv[2]
@@ -11,11 +12,22 @@ portB = sys.argv[5]
 hostname = sys.argv[6]
 ms_name = sys.argv[7]  # mix server name
 
+params = None
 if central_node == "true":
     with open('/params.json') as f:
         params = json.load(f)
 else:
-    params = requests.get('http://' + central_node_ip + '/api/params').json()
+    print "Initialize params"
+    while not params:
+        params_url = 'http://' + central_node_ip + '/api/params'
+        print "Resolve params from", params_url
+        try:
+            params = requests.get(params_url).json()
+        except Exception as e:
+            print "Cannot resolve params", e
+            pass
+        if not params:
+            time.sleep(3)
 
 modulus = params['pgroup']['modulus']
 generator = params['pgroup']['generator']
