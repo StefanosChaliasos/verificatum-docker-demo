@@ -6,9 +6,10 @@ First run the following commands:
 
 ```bash
 docker-compose build
+docker-compose up -it
 ```
 
-The make the following request with httpie (you could use curl as well)
+Then make the following request with httpie (you could use curl as well)
 
 ```bash
 http GET http://localhost:5000/api/start
