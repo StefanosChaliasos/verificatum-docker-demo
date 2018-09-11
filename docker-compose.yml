@@ -16,7 +16,7 @@ services:
             - PORT_B=4041
             - MIXSERVER_NAME=01
         volumes:
-            - ~/Desktop/docker/params.json:/params.json
+            - ./params.json:/params.json
     zeus2:
         image: zeus-mix-server:latest
         ports:
