@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+    zeus1:
+        image: zeus-mix-server:latest
+        ports:
+            - "5000:5000"
+            - "8041:8041"
+        environment:
+            - MIX_SERVERS_ORIGINS=zeus2:5050,zeus3:6000
+            - CENTRAL_NODE=true
+            - CENTRAL_NODE_IP=zeus1:5000
+            - IP=zeus1
+            - PORT=5000
+            - PORT_A=8041
+            - PORT_B=4041
+            - MIXSERVER_NAME=01
+        volumes:
+            - ~/Desktop/docker/params.json:/params.json
+    zeus2:
+        image: zeus-mix-server:latest
+        ports:
+            - "5050:5050"
+            - "8042:8042"
+        environment:
+            - CENTRAL_NODE_IP=zeus1:5000
+            - IP=zeus2
+            - PORT=5050
+            - PORT_A=8042
+            - PORT_B=4042
+            - MIXSERVER_NAME=02
+        depends_on:
+            - zeus1
+    zeus3:
+        image: zeus-mix-server:latest
+        ports:
+            - "6000:6000"
+            - "8043:8043"
+        environment:
+            - CENTRAL_NODE_IP=zeus1:5000
+            - IP=zeus3
+            - PORT=6000
+            - PORT_A=8043
+            - PORT_B=4043
+            - MIXSERVER_NAME=03
+        depends_on:
+            - zeus1
