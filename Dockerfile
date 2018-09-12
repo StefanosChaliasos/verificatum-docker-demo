@@ -24,14 +24,15 @@ RUN vog -rndinit RandomDevice /dev/urandom
 WORKDIR /
 RUN mkdir api
 RUN mkdir verificatum
-COPY pkjson ciphertextsjson ciphertexts.json set_pk.sh run.sh create_prot_info.sh set_ciphertexts.sh /verificatum/
-RUN chmod +x /verificatum/*.sh
+COPY scripts /scripts
+COPY data /data
+RUN chmod +x /scripts/*.sh
 
 # DEPLOY FLASK API
 WORKDIR /
-COPY app_central.py /api/
-COPY app_mix_server.py /api/
-COPY docker_initialize.sh post_prot_info.py initialize.py /
+COPY app_central.py app_mix_server.py /api/
+COPY utils /api/utils
+COPY docker_initialize.sh /
 RUN chmod +x docker_initialize.sh
 # Mix servers (only use it when create central node)
 ENV MIX_SERVERS_ORIGINS localhost:5050,localhost:6000

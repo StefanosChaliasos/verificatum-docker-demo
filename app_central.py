@@ -1,8 +1,14 @@
 from flask import Flask, request, make_response
 from flask_restful import Resource, Api, reqparse
-import xmltodict, json, dicttoxml, requests
+from utils.commands import vmnc_pk, vmn_setpk, vmnc_ciphs, vmn_shuffle, \
+        vmni_merge
+import xmltodict
+import json
+import dicttoxml
+import requests
 import subprocess
 import os
+import sh
 
 
 def output_xml(data, code, headers=None):
@@ -30,7 +36,7 @@ def leading_zero(x):
 
 class Params(Resource):
     def get(self):
-        with open('/params.json') as f:
+        with open('/data/params.json') as f:
             params = json.load(f)
         return params
 
@@ -43,7 +49,9 @@ class InfoFile(Resource):
                   '.xml', 'w') as f:
             f.write(data)
         if counter == 3:
-            print 'We should inform the administrator'
+            print 15 * "*" + "ADMIN MESSAGE" + 15 * "*"
+            print '*   We should inform the administrator   *'
+            print 15 * "*" + "ADMIN MESSAGE" + 15 * "*"
         counter = counter + 1
         return 'Ok', 201
 
@@ -51,13 +59,12 @@ class InfoFile(Resource):
 class Start(Resource):
     def get(self):
         # Run local scripts to initialize local mix server
-        process = subprocess.Popen('/verificatum/create_prot_info.sh',
-                                   shell=True, stdout=subprocess.PIPE)
-        process.wait()
-        process_pk = subprocess.Popen('/verificatum/set_pk.sh',
-                                      shell=True)
-        process_ciphs = subprocess.Popen('/verificatum/set_ciphertexts.sh',
-                                         shell=True)
+        p = vmni_merge()
+        p.wait()
+        sh.cd('/verificatum')
+        vmnc_pk()
+        vmn_setpk()
+        vmnc_ciphs()
         for mixer in mixers:
             # Post proInfoFiles
             for c in xrange(1, 4):  # counter here is 4
@@ -70,17 +77,17 @@ class Start(Resource):
                     headers = {'Content-Type': 'application/xml'}
                     r = requests.post('http://' + mixer + '/api/info-file',
                                       data=xml_data, headers=headers)
-            with open('/verificatum/pkjson', 'r') as f:
+            with open('/data/pkjson', 'r') as f:
                 data = json.load(f)
                 r = requests.post('http://' + mixer + '/api/pk', json=data)
-            with open('/verificatum/ciphertexts.json', 'r') as f:
+            with open('/data/ciphertexts.json', 'r') as f:
                 data = json.load(f)
                 r = requests.post('http://' + mixer + '/api/ciphers',
                                   json=data)
             r = requests.get('http://' + mixer + '/api/setup')
             r = requests.get('http://' + mixer + '/api/begin')
-        process = subprocess.Popen('/verificatum/run.sh',
-                                   shell=True)
+        sh.cd('/verificatum')
+        vmn_shuffle()
         return 'Mixnet starts'
 
 

@@ -14,7 +14,7 @@ ms_name = sys.argv[7]  # mix server name
 
 params = None
 if central_node == "true":
-    with open('/params.json') as f:
+    with open('/data/params.json') as f:
         params = json.load(f)
 else:
     print "Initialize params"
@@ -39,6 +39,7 @@ thres = params['thres']
 
 # Create zeus group
 with open("/verificatum/zeus_group", "w") as h:
+    sh.cd('/verificatum')
     sh.vog('-gen', 'ModPGroup', '-explic', modulus, generator, order, _out=h)
 
 # Initialize mix server

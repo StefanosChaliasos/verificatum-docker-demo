@@ -1,8 +1,11 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
-import xmltodict, json, dicttoxml, requests
+from utils.commands import vmnc_pk, vmn_setpk, vmnc_ciphs, vmn_shuffle, \
+        vmni_merge
+import json
 import subprocess
 import os
+import sh
 
 
 app = Flask(__name__)
@@ -22,7 +25,7 @@ def leading_zero(x):
 class PublicKey(Resource):
     def post(self):
         json_data = request.get_json(force=True)
-        with open('/verificatum/pkjson', 'w') as f:
+        with open('/data/pkjson', 'w') as f:
             json.dump(json_data, f, separators=(',', ':'))
         return 'Public key saved', 201
 
@@ -30,7 +33,7 @@ class PublicKey(Resource):
 class CipherTexts(Resource):
     def post(self):
         json_data = request.get_json(force=True)
-        with open('/verificatum/ciphertextsjson', 'w') as f:
+        with open('/data/ciphertextsjson', 'w') as f:
             for c in json_data:
                 json.dump(c, f, separators=(',', ':'))
                 f.write('\n')
@@ -50,23 +53,19 @@ class InfoFile(Resource):
 
 class SetUp(Resource):
     def get(self):
-        process = subprocess.Popen('/verificatum/create_prot_info.sh',
-                                   shell=True, stdout=subprocess.PIPE)
-        process.wait()
-        process = subprocess.Popen('/verificatum/set_pk.sh',
-                                   shell=True)
-        process.wait()
-        process = subprocess.Popen('/verificatum/set_ciphertexts.sh',
-                                   shell=True)
-        process.wait()
+        p = vmni_merge()
+        p.wait()
+        sh.cd('/verificatum')
+        vmnc_pk()
+        vmn_setpk()
+        vmnc_ciphs()
         # run local scripts
         return 'Mix server setup up completed'
 
 
 class Begin(Resource):
     def get(self):
-        process = subprocess.Popen('/verificatum/run.sh',
-                                   shell=True)
+        vmn_shuffle()
         return 'Mix server begins'
 
 
