@@ -13,25 +13,21 @@ parser = reqparse.RequestParser()
 mixers = []
 
 
-class Params(Resource):
+class API(Resource):
     def get(self):
         with open('/data/params.json') as f:
             params = json.load(f)
         params['mix-servers'] = mixers
         return params
 
-
-class MixServerUrl(Resource):
     def post(self):
-        global mixers
         data = json.loads(request.data)
         mixers.append(data['protInfoUrl'])
         print(mixers)
         return 'Ok', 201
 
 
-api.add_resource(Params, '/api/params')
-api.add_resource(MixServerUrl, '/api/address')
+api.add_resource(API, '/')
 
 
 if __name__ == '__main__':

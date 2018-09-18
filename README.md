@@ -5,16 +5,10 @@
 First execute the following commands:
 
 ```bash
-docker-compose build
-docker-compose up
-```
-
-Then make the following request with curl or httpie
-
-```bash
-curl http://localhost:5000/api/start
-# OR
-http GET http://localhost:5000/api/start
+cd server_image && docker build -t vrf-server-example . && \
+cd ../mix_server_image && docker build -t vrf-mix-server . && \
+cd ../
+docker-compose build && docker-compose up
 ```
 
 ## Run on server or on multiple servers
