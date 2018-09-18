@@ -1,50 +1,51 @@
 version: '3'
 
 services:
-    zeus1:
-        # image: verificatum-demo
-        image: schal/verificatum-demo:latest
+    server:
+        image: vrf-server-example
         ports:
             - "5000:5000"
+        volumes:
+            - ./server_image/test_data/params.json:/data/params.json
+    mixserver1:
+        image: vrf-mix-server
+        ports:
             - "8041:8041"
+            - "8000:8000"
         environment:
-            - MIX_SERVERS_ORIGINS=zeus2:5050,zeus3:6000
-            - CENTRAL_NODE=true
-            - CENTRAL_NODE_IP=zeus1:5000
-            - IP=zeus1
-            - PORT=5000
+            - SERVER=server:5000
+            - IP=mixserver1
+            - PORT=8000
             - PORT_A=8041
             - PORT_B=4041
             - MIXSERVER_NAME=01
-        volumes:
-            - ./helper/params.json:/data/params.json
-    zeus2:
-        image: schal/verificatum-demo:latest
-        # image: verificatum-demo
+        depends_on:
+            - server
+    mixserver2:
+        image: vrf-mix-server
         ports:
-            - "5050:5050"
             - "8042:8042"
+            - "8050:8050"
         environment:
-            - CENTRAL_NODE_IP=zeus1:5000
-            - IP=zeus2
-            - PORT=5050
+            - SERVER=server:5000
+            - IP=mixserver2
+            - PORT=8050
             - PORT_A=8042
             - PORT_B=4042
             - MIXSERVER_NAME=02
         depends_on:
-            - zeus1
-    zeus3:
-        # image: verificatum-demo
-        image: schal/verificatum-demo:latest
+            - server
+    mixserver3:
+        image: vrf-mix-server
         ports:
-            - "6000:6000"
             - "8043:8043"
+            - "9000:9000"
         environment:
-            - CENTRAL_NODE_IP=zeus1:5000
-            - IP=zeus3
-            - PORT=6000
+            - SERVER=server:5000
+            - IP=mixserver3
+            - PORT=9000
             - PORT_A=8043
             - PORT_B=4043
             - MIXSERVER_NAME=03
         depends_on:
-            - zeus1
+            - server

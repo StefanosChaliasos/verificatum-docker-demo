@@ -4,11 +4,13 @@ ENV HOME /root
 
 # UPDATE AND INSTALL DEPENDENCIES
 RUN apt-get -y update && apt-get -y upgrade && apt-get -y dist-upgrade && \
-    apt-get install -y gcc make cmake git m4 libgmp-dev openjdk-8-jdk wget
+    apt-get install -y gcc make cmake git m4 libgmp-dev wget
 RUN apt-get -y update && apt-get install -y python \
     python-pip python-dev build-essential
-COPY requirements.txt requirements.txt
-RUN pip install -r requirements.txt
+# RUN apt-get -u update && apt-get install -y ufw
+# RUN apt-get -u update && apt-get install -y software-properties-common
+# RUN add-apt-repository ppa:openjdk-r/ppa
+RUN apt-get -y update && apt-get install -y openjdk-8-jdk
 
 # DOWNLOAD VERIFICATUM
 RUN wget https://www.verificatum.org/files/verificatum-vmn-full.tar.gz
@@ -20,32 +22,31 @@ RUN sed -i -- 's/sudo//g' Makefile
 RUN make install
 RUN vog -rndinit RandomDevice /dev/urandom
 
+# INSTALL PYTHON DEPENDENCIES
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
 # COPY FILES AND CREATE DIRECTORIES
 WORKDIR /
-RUN mkdir api
 RUN mkdir verificatum
 COPY scripts /scripts
-COPY data /data
 RUN chmod +x /scripts/*.sh
-
-# DEPLOY FLASK API
-WORKDIR /
-COPY app_central.py app_mix_server.py /api/
-COPY utils /api/utils
+COPY utils /scripts/utils
 COPY docker_initialize.sh /
 RUN chmod +x docker_initialize.sh
-# Mix servers (only use it when create central node)
-ENV MIX_SERVERS_ORIGINS localhost:5050,localhost:6000
+RUN mkdir data
+
+# SET UP FIREWALL
+# RUN ufw enable
+# RUN ufw allow 'Nginx HTTP'
+
 # Central node
-ENV CENTRAL_NODE false
-ENV CENTRAL_NODE_IP localhost:5000
-# Mix server specific ip and ports (flask, verificatum http, verificatum hint)
+ENV SERVER localhost:5000
+# Mix server specific ip and ports (verificatum http, verificatum hint)
 ENV IP localhost
-ENV PORT 5000
+ENV PORT 8000
 ENV PORT_A 8041
 ENV PORT_B 4041
 # Mix server name
 ENV MIXSERVER_NAME 01
-# If you ran central node don't forget to pass params.json as docker volume
-# run ... -v /path/to/params.json:/params.json ...
 ENTRYPOINT ./docker_initialize.sh
