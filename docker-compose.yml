@@ -2,13 +2,13 @@ version: '3'
 
 services:
     server:
-        image: vrf-server-example
+        image: schal/vrf-server-example
         ports:
             - "5000:5000"
         volumes:
             - ./server_image/test_data/params.json:/data/params.json
     mixserver1:
-        image: vrf-mix-server
+        image: schal/vrf-mix-server
         ports:
             - "8041:8041"
             - "8000:8000"
@@ -22,7 +22,7 @@ services:
         depends_on:
             - server
     mixserver2:
-        image: vrf-mix-server
+        image: schal/vrf-mix-server
         ports:
             - "8042:8042"
             - "8050:8050"
@@ -36,7 +36,7 @@ services:
         depends_on:
             - server
     mixserver3:
-        image: vrf-mix-server
+        image: schal/vrf-mix-server
         ports:
             - "8043:8043"
             - "9000:9000"

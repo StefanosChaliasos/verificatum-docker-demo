@@ -28,16 +28,8 @@ RUN pip install -r requirements.txt
 
 # COPY FILES AND CREATE DIRECTORIES
 WORKDIR /
-RUN mkdir verificatum
-COPY scripts /scripts
-COPY utils /scripts/utils
-COPY docker_initialize.sh /
-RUN chmod +x docker_initialize.sh
-RUN mkdir data
-
-# SET UP FIREWALL
-# RUN ufw enable
-# RUN ufw allow 'Nginx HTTP'
+copy initialize.py initialize.py
+COPY utils /utils
 
 # Central node
 ENV SERVER localhost:5000
@@ -48,4 +40,5 @@ ENV PORT_A 8041
 ENV PORT_B 4041
 # Mix server name
 ENV MIXSERVER_NAME 01
-ENTRYPOINT ./docker_initialize.sh
+ENTRYPOINT ["python"]
+CMD ["initialize.py"]

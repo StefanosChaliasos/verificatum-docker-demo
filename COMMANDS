@@ -1,28 +1,12 @@
 build:
     sudo docker build -t verificatum-demo .
 logs:
-    sudo docker logs zeus
+    sudo docker logs container_name
 stop:
-    sudo docker stop zeus
+    sudo docker stop container_name
 shell:
-    sudo docker exec -i -t zeus /bin/bash
+    sudo docker exec -i -t container_name /bin/bash
 ps:
     sudo docker ps -a
 tag:
     docker tag ebdcbecbeba7 schal/verificatum-demo:latest
-
-run to multiple vms:
-    central:
-        sudo docker run -it --rm -p 5000:5000 -p 8041:8041 -e MIX_SERVERS_ORIGINS=[SECOND_IP]:5000,[THIRD_IP]:5000 -e CENTRAL_NODE=true -e CENTRAL_NODE_IP=[FIRST_IP]:5000 -e IP=[FIRST_IP] -e PORT=5000 -e PORT_A=8041 -e PORT_B=4041 -e MIXSERVER_NAME=01 -v ~/path/to/repo/params.json:/params.json --name zeus schal/verificatum-demo
-    mix-server:
-        sudo docker run -it --rm -p 5000:5000 -p 8042:8042 -e CENTRAL_NODE_IP=[FIRST_IP]:5000 -e IP=[SECOND_IP] -e PORT=5000 -e PORT_A=8042 -e PORT_B=4042 -e MIXSERVER_NAME=02 --name zeus schal/verificatum-demo
-        sudo docker run -d --rm -p 5000:5000 -p 8043:8043 -e CENTRAL_NODE_IP=[FIRST_IP]:5000 -e IP=[THIRD_IP] -e PORT=5000 -e PORT_A=8043 -e PORT_B=4043 -e MIXSERVER_NAME=03 --name zeus schal/verificatum-demo
-run to single vm:
-    central:
-        sudo docker run -d --rm -p 5000:5000 -p 8041:8041 -e MIX_SERVERS_ORIGINS=[IP]:5050,[IP]:6000 -e CENTRAL_NODE=true -e CENTRAL_NODE_IP=[IP]:5000 -e IP=[IP] -e PORT=5000 -e PORT_A=8041 -e PORT_B=4041 -e MIXSERVER_NAME=01 -v ~/path/to/repo/params.json:/params.json --name zeus1 schal/verificatum-demo
-    mix-server:
-        sudo docker run -d --rm -p 5050:5050 -p 8042:8042 -e CENTRAL_NODE_IP=[IP]:5000 -e IP=[IP] -e PORT=5050 -e PORT_A=8042 -e PORT_B=4042 -e MIXSERVER_NAME=02 --name zeus2 schal/verificatum-demo
-        sudo docker run -it --rm -p 6000:6000 -p 8043:8043 -e CENTRAL_NODE_IP=[IP]:5000 -e IP=[IP] -e PORT=6000 -e PORT_A=8043 -e PORT_B=4043 -e MIXSERVER_NAME=03 --name zeus3 schal/verificatum-demo
-
-
-docker run -it --rm -p 5000:5000 -v /Users/sh/Documents/Work/grnet/verificatum-docker-demo/test_data/params.json:/data/params.json --name server verificatum-demo

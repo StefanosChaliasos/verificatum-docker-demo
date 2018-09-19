@@ -1,5 +1,7 @@
+#!/usr/bin/env python
 import requests
 import sys
+import os
 from utils.util import serve_protinfo, get_params, create_group,\
         init_mix_server, save_prot_info_files, create_pk, merge_prot_files, \
         create_ciphertexts, run_mix_server, serve_results
@@ -8,19 +10,32 @@ from utils.util import serve_protinfo, get_params, create_group,\
 folder = '/verificatum'
 group_name = 'zeus_group'
 
-server_url = sys.argv[1]
-ip = sys.argv[2]
-port = int(sys.argv[3])
-portA = sys.argv[4]
-portB = sys.argv[5]
-hostname = sys.argv[6]
-ms_name = sys.argv[7]  # mix server name
+if len(sys.argv) > 2:
+    server_url = sys.argv[1]
+    ip = sys.argv[2]
+    port = int(sys.argv[3])
+    portA = sys.argv[4]
+    portB = sys.argv[5]
+    hostname = sys.argv[6]
+    ms_name = sys.argv[7]  # mix server name
+else:
+    server_url = os.environ['SERVER']
+    ip = os.environ['IP']
+    port = int(os.environ['PORT'])
+    portA = os.environ['PORT_A']
+    portB = os.environ['PORT_B']
+    hostname = os.environ['HOSTNAME']
+    ms_name = os.environ['MIXSERVER_NAME']  # mix server name
+
 
 # Get params from server
 params = get_params(server_url)
 
 crypto = params['group']
 vrf_params = params['verificatum']
+
+# Create mix server directory
+os.makedirs(folder)
 
 # Create zeus group
 create_group(folder, group_name, crypto)

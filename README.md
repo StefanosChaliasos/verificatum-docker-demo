@@ -2,18 +2,16 @@
 
 ## Run localhost
 
-First execute the following commands:
-
 ```bash
-cd server_image && docker build -t vrf-server-example . && \
-cd ../mix_server_image && docker build -t vrf-mix-server . && \
-cd ../
 docker-compose build && docker-compose up
 ```
 
-## Run on server or on multiple servers
+## Build
 
-Check COMMANDS file.
+```bash
+cd server_image && docker build -t vrf-server-example . && \
+cd ../mix_server_image && docker build -t vrf-mix-server . && cd ../
+```
 
 ## Disclaimer
 
