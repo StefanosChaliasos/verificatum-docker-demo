@@ -1,16 +1,44 @@
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from SimpleHTTPServer import SimpleHTTPRequestHandler
 from multiprocessing import Process
 from .commands import vmnc_pk, vmni_merge, vmnc_ciphs, vmn_shuffle, vmn_setpk
 import json
 import requests
 import time
 import sh
+import os
+import posixpath
+import urllib
+from shutil import copyfile
 
 
 def leading_zero(x):
     if len(str(x)) <= 1:
         return '0' + str(x)
     return str(x)
+
+
+class RootedHTTPServer(HTTPServer):
+
+    def __init__(self, base_path, *args, **kwargs):
+        HTTPServer.__init__(self, *args, **kwargs)
+        self.RequestHandlerClass.base_path = base_path
+
+
+class RootedHTTPRequestHandler(SimpleHTTPRequestHandler):
+
+    def translate_path(self, path):
+        path = posixpath.normpath(urllib.unquote(path))
+        words = path.split('/')
+        words = filter(None, words)
+        path = self.base_path
+        for word in words:
+            drive, word = os.path.splitdrive(word)
+            head, word = os.path.split(word)
+            if word in (os.curdir, os.pardir):
+                continue
+            path = os.path.join(path, word)
+        return path
 
 
 class GetServer(BaseHTTPRequestHandler):
@@ -129,9 +157,19 @@ def create_ciphertexts(path, ciphertexts):
         for c in ciphertexts:
             json.dump(c, f, separators=(',', ':'))
             f.write('\n')
-    sh.cd(path)
     vmnc_ciphs(path)
 
 
 def run_mix_server(path):
     vmn_shuffle()
+
+
+def serve_results(path, port, folder='/results'):
+    os.makedirs(folder)
+    vmnc_ciphs(path, 'ciphertexts', 'ciphertexts.json', ('raw', 'json'))
+    copyfile(path + '/ciphertexts.json', folder + '/ciphertexts.json')
+    copyfile(path + '/protInfo.xml', folder + '/protInfo.xml')
+    sh.cp('-r', path + '/dir/nizkp/default/proofs/', folder)
+    server_address = ('', port)
+    httpd = RootedHTTPServer(folder, server_address, RootedHTTPRequestHandler)
+    return httpd

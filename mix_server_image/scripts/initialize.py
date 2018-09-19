@@ -2,7 +2,7 @@ import requests
 import sys
 from utils.util import serve_protinfo, get_params, create_group,\
         init_mix_server, save_prot_info_files, create_pk, merge_prot_files, \
-        create_ciphertexts, run_mix_server
+        create_ciphertexts, run_mix_server, serve_results
 
 
 folder = '/verificatum'
@@ -58,7 +58,6 @@ run_mix_server(folder)
 # Stop the local server
 server.terminate()
 
-# publish mixed ciphertexts
-with open(folder + '/ciphertextsout', 'r') as f:
-    mixed_ciphertexts = f.read()
-server = serve_protinfo(mixed_ciphertexts, port)  # local server process
+# publish mixed ciphertexts, proofs, and protInfo
+server = serve_results(folder, port, '/results')  # local server process
+server.serve_forever()

@@ -17,9 +17,11 @@ def vmn_setpk():
     return sh.vmn('-setpk', 'publicKey')
 
 
-def vmnc_ciphs(path):
-    return sh.vmnc('-ciphs', '-ini', 'json', '-outi', 'raw', 'protInfo.xml',
-                   path + '/ciphertextsjson', 'ciphertexts')
+def vmnc_ciphs(path, infile='ciphertextsjson', outfile='ciphertexts',
+               types=('json', 'raw')):
+    sh.cd(path)
+    sh.vmnc('-ciphs', '-ini', types[0], '-outi', types[1], 'protInfo.xml',
+            infile, outfile)
 
 
 def vmni_merge(path):
