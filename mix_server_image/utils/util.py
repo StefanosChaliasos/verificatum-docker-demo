@@ -113,8 +113,7 @@ def save_prot_info_files(nopart, server_url, path, ip_port):
 
 
 def merge_prot_files(path):
-    p = vmni_merge(path)
-    p.wait()
+    vmni_merge(path)
 
 
 def create_pk(path, pk):

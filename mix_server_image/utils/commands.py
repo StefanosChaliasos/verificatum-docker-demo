@@ -18,10 +18,13 @@ def vmnc_ciphs(path):
 
 def vmni_merge(path):
     # FIXME
-    return subprocess.Popen('/scripts/create_prot_info.sh', shell=True,
-                            stdout=subprocess.PIPE)
+    sh.cd(path)
+    sh.vmni('-merge', sh.glob('protInfo*.xml'), 'protInfo.xml')
 
 
 def vmn_shuffle():
     # FIXME
+    #  sh.cd('/verificatum')
+    #  sh.vmn('-shuffle', 'privInfo.xml', 'protInfo.xml', 'ciphertexts',
+           #  'ciphertextsout')
     return subprocess.Popen('/scripts/run.sh', shell=True)
