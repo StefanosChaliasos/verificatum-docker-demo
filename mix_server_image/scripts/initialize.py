@@ -46,9 +46,6 @@ save_prot_info_files(vrf_params['nopart'], server_url, folder, ip_port)
 # Merge prot info files
 merge_prot_files(folder)
 
-# Stop the local server
-server.terminate()
-
 # Create public key file
 create_pk(folder, params['publicKey'])
 
@@ -57,3 +54,11 @@ create_ciphertexts(folder, params['ciphertexts'])
 
 # Run the mix server
 run_mix_server(folder)
+
+# Stop the local server
+server.terminate()
+
+# publish mixed ciphertexts
+with open(folder + '/ciphertextsout', 'r') as f:
+    mixed_ciphertexts = f.read()
+server = serve_protinfo(mixed_ciphertexts, port)  # local server process
