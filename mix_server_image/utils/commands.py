@@ -1,5 +1,11 @@
 import sh
-import subprocess
+
+
+def process_output(line, stdin, process):
+    print(line)
+    if "ERROR" in line:
+        process.kill()
+        return True
 
 
 def vmnc_pk(path):
@@ -17,14 +23,11 @@ def vmnc_ciphs(path):
 
 
 def vmni_merge(path):
-    # FIXME
     sh.cd(path)
     sh.vmni('-merge', sh.glob('protInfo*.xml'), 'protInfo.xml')
 
 
 def vmn_shuffle():
-    # FIXME
-    #  sh.cd('/verificatum')
-    #  sh.vmn('-shuffle', 'privInfo.xml', 'protInfo.xml', 'ciphertexts',
-           #  'ciphertextsout')
-    return subprocess.Popen('/scripts/run.sh', shell=True)
+    p = sh.vmn("-shuffle", "privInfo.xml", "protInfo.xml", "ciphertexts",
+               "ciphertextsout", _out=process_output, _bg=True)
+    p.wait()
