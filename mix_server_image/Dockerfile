@@ -30,7 +30,6 @@ RUN pip install -r requirements.txt
 WORKDIR /
 RUN mkdir verificatum
 COPY scripts /scripts
-RUN chmod +x /scripts/*.sh
 COPY utils /scripts/utils
 COPY docker_initialize.sh /
 RUN chmod +x docker_initialize.sh

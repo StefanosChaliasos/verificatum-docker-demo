@@ -46,6 +46,9 @@ save_prot_info_files(vrf_params['nopart'], server_url, folder, ip_port)
 # Merge prot info files
 merge_prot_files(folder)
 
+# Stop the local server
+server.terminate()
+
 # Create public key file
 create_pk(folder, params['publicKey'])
 
